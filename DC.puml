@@ -1,0 +1,149 @@
+@startuml
+Hecho *-up- Ubicacion
+Hecho <-up- Multimedia
+Hecho <-- TipoDeFuente
+Hecho o-- Etiqueta
+Hecho o-up- Contribuyente
+Hecho o--  Categoria
+Coleccion o-- Hecho
+Coleccion *-- Criterio
+Coleccion o-up- Fuente
+Fuente <|.. FuenteEstaticaCSV
+Fuente <|.. FuenteDinamica
+Hecho *-- SolicitudEliminacion
+SolicitudEliminacion o-- Hecho
+SolicitudEliminacion -down-* Administrador
+Hecho <-up- Filtrador
+Filtrador <|-- FiltradorCategoria
+Filtrador <|-- FiltradorTitulo
+Criterio <|.. CriterioOR
+Criterio <|.. CriterioAND
+Criterio <|.. CriterioPorFecha
+Criterio <|.. CriterioPorCategoria
+Categoria *-up- FiltradorCategoria
+
+abstract class Filtrador{
+    +filtrar(): List<Hecho>
+    +cumpleCondicion(hecho: Hecho): Boolean
+}
+
+class FiltradorCategoria{
+    -categoria: Categoria
+    +filtrar(): List<Hecho>
+    +cumpleCondicion(hecho: Hecho): Boolean
+}
+
+class FiltradorTitulo{
+    -titulo: String
+    +filtrar(): List<Hecho>
+    +cumpleCondicion(hecho: Hecho): Boolean
+}
+
+class Etiqueta{
+    -nombre: String
+}
+
+
+class FuenteEstaticaCSV{
+    -CSVPath
+    +obtenerHecho(): List<Hecho>
+}
+
+class FuenteDinamica{
+}
+
+interface Fuente{
+    +obtenerHechos(): List<Hecho>
+}
+
+class Coleccion{
+    -criterio: Criterio
+    -titulo: String
+    -descripcion: String
+    -fuente: FuenteEstatica
+    -listaHechos: List<Hecho>
+}
+
+interface Criterio{
+    +evaluarPertenencia(hecho:Hecho): Boolean
+}
+
+class CriterioPorCategoria{
+    -categoria: Categoria
+    +evaluarPertenencia(): Boolean
+}
+
+class CriterioPorFecha{
+    -fechaInicio: LocalDate
+    -fechaFin: LocalDate
+    +evaluarPertenencia(): Boolean
+}
+
+class CriterioOR{
+    -criterios: List<Criterio>
+
+    +evaluarPertenencia(): Boolean
+    +agregarCriterio(criterio: Criterio): void
+}
+
+class CriterioAND{
+    -criterios: List<Criterio>
+
+    +evaluarPertenencia(): Boolean
+    +agregarCriterio(criterio: Criterio): void
+}
+
+class Categoria {
+    -categoriaID: Integer
+    -nombre: String
+}
+
+class Hecho{
+    -visible: Boolean
+    -titulo: String
+    -descripcion: String
+    -categoria: Categoria
+    -contenidoMultimedia: Multimedia
+    -fechaAcontecimiento: LocalDateTime
+    -fechaCarga: LocalDateTime
+    -contribuyente: Contribuyente
+    -origen: tipoDeFuente
+    -etiquetas: list<Etiqueta>
+    -solicitudesPendientes: SolicitudEliminacion
+}
+class Ubicacion{
+    -latitud: Float
+    -longitud: Float
+}
+
+class Multimedia{
+}
+
+enum TipoDeFuente {
+    CONTRIBUYENTE,
+    FUENTEESTATICA,
+    MANUAL
+}
+
+class Contribuyente{
+    -nombre: String
+    -apellido: String
+    -edad: Integer
+}
+
+class SolicitudEliminacion {
+    -motivo: String
+    -estado: EstadoSolicitud
+    -fechaCarga: LocalDate
+    -fechaRevision: LocalDate
+    -hecho: Hecho
+    -administrador: Administrador
+}
+
+class Administrador {
+    -nombre: String
+}
+
+
+
+@enduml
